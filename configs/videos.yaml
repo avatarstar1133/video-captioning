@@ -1,0 +1,15 @@
+# Register videos here. Do NOT assign vlog/documentary/fastcut/cctv labels.
+# The R0/R1 pipeline analyzes temporal characteristics from the video itself.
+
+videos:
+  video_001:
+    path: "../videos/video_001.mp4"
+
+  video_002:
+    path: "../videos/video_002.mp4"
+
+  video_003:
+    path: "../videos/video_003.mp4"
+
+  video_004:
+    path: "../videos/video_004.mp4"
