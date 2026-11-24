@@ -5,31 +5,67 @@ analysis:
   adaptive_threshold: 3.0
   content_threshold: 27.0
   min_scene_len_frames: 8
-
-  # Sparse frame sampling for visual-change statistics.
   sample_interval_sec: 0.5
   resize_width: 160
   resize_height: 90
+  cut_validation:
+    enabled: true
+    sample_offset_sec: 0.15
+    changed_pixel_threshold: 0.10
+    min_changed_pixel_ratio: 0.50
+    min_mean_abs_diff: 0.055
+    max_histogram_correlation: 0.82
+    histogram_min_mean_abs_diff: 0.035
 
 profiling:
-  # Overlapping local windows. These windows are ONLY for profiling,
-  # not final retrieval segments.
   window_sec: 60.0
   stride_sec: 30.0
-
-  # Pair-wise frame delta below this value is considered visually static.
-  # Delta is mean absolute grayscale difference normalized to [0, 1].
   static_delta_threshold: 0.020
-
-  # Heuristic regime thresholds. These are research defaults, not claimed optimal.
   static:
-    max_cuts_per_min: 0.25
-    min_static_pair_ratio: 0.75
-
+    max_validated_cuts_per_min: 1.0
+    min_static_pair_ratio: 0.70
   high_cut:
-    min_cuts_per_min: 10.0
-    max_median_shot_sec: 4.0
-
+    min_validated_cuts_per_min: 10.0
+    max_median_shot_sec: 4.5
+    max_static_pair_ratio: 0.65
   low_cut:
-    max_cuts_per_min: 2.0
-    min_median_shot_sec: 20.0
+    max_validated_cuts_per_min: 2.0
+    min_median_shot_sec: 15.0
+
+segmentation:
+  regime_resolution_sec: 1.0
+  fallback_regime: medium_cut
+  merge_same_regime_neighbors: true
+  coverage_tolerance_sec: 0.05
+  policies:
+    static:
+      mode: fixed
+      min_segment_sec: 10.0
+      max_segment_sec: 20.0
+    low_cut:
+      mode: shot_aware
+      min_segment_sec: 6.0
+      max_segment_sec: 30.0
+    medium_cut:
+      mode: shot_aware
+      min_segment_sec: 3.0
+      max_segment_sec: 20.0
+    high_cut:
+      mode: merge_short_shots
+      min_segment_sec: 4.0
+      max_segment_sec: 12.0
+
+representation:
+  representative_positions:
+    - 0.25
+    - 0.50
+    - 0.75
+
+  model_name: openai/clip-vit-base-patch32
+  batch_size: 32
+  jpeg_quality: 92
+  save_representative_frames: true
+
+  retrieval:
+    model_name: openai/clip-vit-base-patch32
+    top_k_segments: 5
